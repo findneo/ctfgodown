@@ -1,0 +1,1 @@
+请在 macOS High Sierra, macOS Sierra 或 EL Capitan 平台禁用系统签名校验后加载附件中的 Kext 驱动程序，macOS 系统会 Panic。请试着分析 Panic 信息，找出隐藏在内存中的密钥。
