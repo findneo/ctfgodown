@@ -114,7 +114,7 @@ brute()
 
 # the user is admin
 
-和 bugku 平台某个题目原理一致，只有文件名和部分字符串不同，可以参考 [该题](https://findneo.github.io/180406BugkuWriteup/#welcome-to-bugkuctf) ，不赘述。
+和 bugku 平台某个题目原理相似，可以参考 [该题](https://findneo.github.io/180406BugkuWriteup/#welcome-to-bugkuctf) ，不赘述。
 
 ```php
 /web/theuserisadmin/?file=class.php&user=php://input&pass=O:4:"Read":1:{s:4:"file";s:8:"f1a9.php";}
@@ -186,7 +186,7 @@ base32编码
 
 # 下午
 
-CMSeeK 扫出配置文件 http://192.168.200.202//configuration.php.txt 
+[CMSeeK](https://github.com/Tuhinshubhra/CMSeeK) 扫出配置文件 http://192.168.200.202//configuration.php.txt 
 
 底部有flag: `flag{0b58f603ff55c0c190502b44b4ffbf2c}`  
 
