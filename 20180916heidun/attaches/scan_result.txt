@@ -1,0 +1,126 @@
+━Target: 192.168.200.201
+ ┃
+ ┠── CMS: WordPress
+ ┃    │
+ ┃    ├── Version: 4.9.5
+ ┃    ╰── URL: https://wordpress.org
+ ┃
+ ┠──[WordPress Deepscan]
+ ┃    │
+ ┃    ├── Readme file found: http://192.168.200.201//readme.html
+ ┃    ├── License file: http://192.168.200.201//license.txt
+ ┃    ├── Uploads directory has listing enabled: http://192.168.200.201//wp-content/uploads
+ ┃    │
+ ┃    ├── Plugins Enumerated: 1
+ ┃    │    │
+ ┃    │    ╰── Plugin: wp-with-spritz
+ ┃    │        │
+ ┃    │        ├── Version: 4.9.5
+ ┃    │        ╰── URL: http://192.168.200.201//wp-content/plugins/wp-with-spritz
+ ┃    │
+ ┃    │
+ ┃    ├── Themes Enumerated: 1
+ ┃    │    │
+ ┃    │    ╰── Theme: twentyseventeen
+ ┃    │        │
+ ┃    │        ├── Version: 4.9.5
+ ┃    │        ╰── URL: http://192.168.200.201//wp-content/themes/twentyseventeen
+ ┃    │
+ ┃    │
+ ┃    ├── Usernames harvested: 1
+ ┃    │    ╰── admin
+ ┃    │
+ ┃
+ ┠── Result: /root/heidun/tool/identify/CMSeeK/Result/192.168.200.201/cms.json
+ ┃
+ ┗━Scan Completed in 55.03 Seconds, using 45 Requests
+
+
+ root@kali:~/heidun/tool/identify/CMSeeK/Result/192.168.200.201# cat cms.json 
+{
+    "cms_id": "wp",
+    "cms_name": "WordPress",
+    "cms_url": "https://wordpress.org",
+    "detection_param": "header",
+    "last_scanned": "2018-09-16 12:15:04.516587",
+    "url": "http://192.168.200.201/",
+    "wp_license": "http://192.168.200.201//license.txt",
+    "wp_plugins": "wp-with-spritz Version 4.9.5,",
+    "wp_readme_file": "http://192.168.200.201//readme.html",
+    "wp_themes": "twentyseventeen Version 4.9.5,",
+    "wp_uploads_directory": "http://192.168.200.201//wp-content/uploads",
+    "wp_users": "admin,",
+    "wp_version": "4.9.5"
+}
+root@kali:~/heidun/tool/identify/CMSeeK/Result/192.168.200.201# cat ../192.168.200.202/cms.json 
+{
+    "cms_id": "joom",
+    "cms_name": "joomla",
+    "cms_url": "https://joomla.org",
+    "detection_param": "header",
+    "joomla_backup_files": "
+    http://192.168.200.202//2.txt,
+    http://192.168.200.202//1.tar,
+    http://192.168.200.202//1.txt,
+    http://192.168.200.202//1.rar,
+    http://192.168.200.202//1.tmp,
+    http://192.168.200.202//1.tgz,
+    http://192.168.200.202//1.tar.gz,
+    http://192.168.200.202//1.tar.bz2,
+    http://192.168.200.202//1.gz,
+    http://192.168.200.202//1.zip,
+    http://192.168.200.202//2.tar,
+    http://192.168.200.202//2.back,
+    http://192.168.200.202//2.tar.bz2,
+    http://192.168.200.202//2.backup,
+    http://192.168.200.202//2.save,
+    http://192.168.200.202//1.save,
+    http://192.168.200.202//2.rar,
+    http://192.168.200.202//2.tmp,
+    http://192.168.200.202//2.gz,
+    http://192.168.200.202//2.tar.gz,
+    http://192.168.200.202//2.tgz,
+    http://192.168.200.202//2.zip,",
+    "joomla_config_files": "http://192.168.200.202//configuration.php.txt,",
+    "joomla_debug_mode": "disabled",
+    "joomla_readme_file": "http://192.168.200.202//README.txt",
+    "joomla_version": "3.7.1",
+    "last_scanned": "2018-09-16 12:05:04.841063",
+    "url": "http://192.168.200.202/"
+
+
+
+root@kali:~/heidun# nmap 192.168.200.202
+Starting Nmap 7.70 ( https://nmap.org ) at 2018-09-16 13:20 CST
+Nmap scan report for 192.168.200.202
+Host is up (1.5s latency).
+Not shown: 987 closed ports
+PORT      STATE    SERVICE
+80/tcp    open     http
+135/tcp   open     msrpc
+139/tcp   open     netbios-ssn
+445/tcp   open     microsoft-ds
+514/tcp   filtered shell
+3306/tcp  open     mysql
+49152/tcp open     unknown
+49153/tcp open     unknown
+49154/tcp open     unknown
+49155/tcp open     unknown
+49156/tcp open     unknown
+49157/tcp open     unknown
+49158/tcp open     unknown
+
+Nmap done: 1 IP address (1 host up) scanned in 28.38 seconds
+root@kali:~/heidun# 
+nmap 192.168.200.201
+Starting Nmap 7.70 ( https://nmap.org ) at 2018-09-16 14:08 CST
+Nmap scan report for 192.168.200.201
+Host is up (0.91s latency).
+Not shown: 996 closed ports
+PORT     STATE    SERVICE
+22/tcp   open     ssh
+80/tcp   open     http
+514/tcp  filtered shell
+3389/tcp open     ms-wbt-server
+
+Nmap done: 1 IP address (1 host up) scanned in 19.39 seconds

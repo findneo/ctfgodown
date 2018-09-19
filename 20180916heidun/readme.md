@@ -114,7 +114,7 @@ brute()
 
 # the user is admin
 
-bugku原题，只改了文件名和字符串。可以直接看 [原题](https://findneo.github.io/180406BugkuWriteup/#welcome-to-bugkuctf) ，不赘述。
+和 bugku 平台某个题目原理一致，只有文件名和部分字符串不同，可以参考 [该题](https://findneo.github.io/180406BugkuWriteup/#welcome-to-bugkuctf) ，不赘述。
 
 ```php
 /web/theuserisadmin/?file=class.php&user=php://input&pass=O:4:"Read":1:{s:4:"file";s:8:"f1a9.php";}
@@ -136,24 +136,6 @@ cat secret.txt | base64 -d | base64 -d > final.png
 ```
 
 ![1537070199581](images/1537070199581.png)
-
-# [x]TheSameInside
-
-foremost pcap=>pyc
-
-VGVsbCB5b3UgYXJndj1mbGFn=>Tell you argv=flag
-
-python -c "import dis;dis.dis(open('FINISHITGETIT.pyc').read())" > FINISHITGETIT.py
-
-脑洞无边，貌似没有人做出来。
-
-# [x]Spartacus
-
-让看肌肉，不是很懂。。。
-
-![1537109675591](images/1537109675591.png)
-
-
 
 # 注入日志分析
 
@@ -204,147 +186,8 @@ base32编码
 
 # 下午
 
-cmsSeek 扫出配置文件 http://192.168.200.202//configuration.php.txt 
+CMSeeK 扫出配置文件 http://192.168.200.202//configuration.php.txt 
 
-底部有flag:`flag{0b58f603ff55c0c190502b44b4ffbf2c}`  
+底部有flag: `flag{0b58f603ff55c0c190502b44b4ffbf2c}`  
 
-此外还扫出一些东西，但msf不熟悉导致爆破举步维艰。实战经验还是缺乏，需要多锻炼。
-
-```python
-━Target: 192.168.200.201
- ┃
- ┠── CMS: WordPress
- ┃    │
- ┃    ├── Version: 4.9.5
- ┃    ╰── URL: https://wordpress.org
- ┃
- ┠──[WordPress Deepscan]
- ┃    │
- ┃    ├── Readme file found: http://192.168.200.201//readme.html
- ┃    ├── License file: http://192.168.200.201//license.txt
- ┃    ├── Uploads directory has listing enabled: http://192.168.200.201//wp-content/uploads
- ┃    │
- ┃    ├── Plugins Enumerated: 1
- ┃    │    │
- ┃    │    ╰── Plugin: wp-with-spritz
- ┃    │        │
- ┃    │        ├── Version: 4.9.5
- ┃    │        ╰── URL: http://192.168.200.201//wp-content/plugins/wp-with-spritz
- ┃    │
- ┃    │
- ┃    ├── Themes Enumerated: 1
- ┃    │    │
- ┃    │    ╰── Theme: twentyseventeen
- ┃    │        │
- ┃    │        ├── Version: 4.9.5
- ┃    │        ╰── URL: http://192.168.200.201//wp-content/themes/twentyseventeen
- ┃    │
- ┃    │
- ┃    ├── Usernames harvested: 1
- ┃    │    ╰── admin
- ┃    │
- ┃
- ┠── Result: /root/heidun/tool/identify/CMSeeK/Result/192.168.200.201/cms.json
- ┃
- ┗━Scan Completed in 55.03 Seconds, using 45 Requests
-```
-
-
-
-```python
-root@kali:~/heidun# nmap 192.168.200.202
-Starting Nmap 7.70 ( https://nmap.org ) at 2018-09-16 13:20 CST
-Nmap scan report for 192.168.200.202
-Host is up (1.5s latency).
-Not shown: 987 closed ports
-PORT      STATE    SERVICE
-80/tcp    open     http
-135/tcp   open     msrpc
-139/tcp   open     netbios-ssn
-445/tcp   open     microsoft-ds
-514/tcp   filtered shell
-3306/tcp  open     mysql
-49152/tcp open     unknown
-49153/tcp open     unknown
-49154/tcp open     unknown
-49155/tcp open     unknown
-49156/tcp open     unknown
-49157/tcp open     unknown
-49158/tcp open     unknown
-
-Nmap done: 1 IP address (1 host up) scanned in 28.38 seconds
-root@kali:~/heidun# 
-nmap 192.168.200.201
-Starting Nmap 7.70 ( https://nmap.org ) at 2018-09-16 14:08 CST
-Nmap scan report for 192.168.200.201
-Host is up (0.91s latency).
-Not shown: 996 closed ports
-PORT     STATE    SERVICE
-22/tcp   open     ssh
-80/tcp   open     http
-514/tcp  filtered shell
-3389/tcp open     ms-wbt-server
-
-Nmap done: 1 IP address (1 host up) scanned in 19.39 seconds
-
-```
-
-
-
-
-
-```python
-root@kali:~/heidun/tool/identify/CMSeeK/Result/192.168.200.201# cat cms.json 
-{
-    "cms_id": "wp",
-    "cms_name": "WordPress",
-    "cms_url": "https://wordpress.org",
-    "detection_param": "header",
-    "last_scanned": "2018-09-16 12:15:04.516587",
-    "url": "http://192.168.200.201/",
-    "wp_license": "http://192.168.200.201//license.txt",
-    "wp_plugins": "wp-with-spritz Version 4.9.5,",
-    "wp_readme_file": "http://192.168.200.201//readme.html",
-    "wp_themes": "twentyseventeen Version 4.9.5,",
-    "wp_uploads_directory": "http://192.168.200.201//wp-content/uploads",
-    "wp_users": "admin,",
-    "wp_version": "4.9.5"
-}
-root@kali:~/heidun/tool/identify/CMSeeK/Result/192.168.200.201# cat ../192.168.200.202/cms.json 
-{
-    "cms_id": "joom",
-    "cms_name": "joomla",
-    "cms_url": "https://joomla.org",
-    "detection_param": "header",
-    "joomla_backup_files": "
-    http://192.168.200.202//2.txt,
-    http://192.168.200.202//1.tar,
-    http://192.168.200.202//1.txt,
-    http://192.168.200.202//1.rar,
-    http://192.168.200.202//1.tmp,
-    http://192.168.200.202//1.tgz,
-    http://192.168.200.202//1.tar.gz,
-    http://192.168.200.202//1.tar.bz2,
-    http://192.168.200.202//1.gz,
-    http://192.168.200.202//1.zip,
-    http://192.168.200.202//2.tar,
-    http://192.168.200.202//2.back,
-    http://192.168.200.202//2.tar.bz2,
-    http://192.168.200.202//2.backup,
-    http://192.168.200.202//2.save,
-    http://192.168.200.202//1.save,
-    http://192.168.200.202//2.rar,
-    http://192.168.200.202//2.tmp,
-    http://192.168.200.202//2.gz,
-    http://192.168.200.202//2.tar.gz,
-    http://192.168.200.202//2.tgz,
-    http://192.168.200.202//2.zip,",
-    "joomla_config_files": "http://192.168.200.202//configuration.php.txt,",
-    "joomla_debug_mode": "disabled",
-    "joomla_readme_file": "http://192.168.200.202//README.txt",
-    "joomla_version": "3.7.1",
-    "last_scanned": "2018-09-16 12:05:04.841063",
-    "url": "http://192.168.200.202/"
-
-```
-
+此外一些没进一步利用上的信息和部分题目的附件放在[GiIthub](https://github.com/findneo/ctfgodown/blob/master/20180916heidun/) 上，有兴趣可移步查看。
