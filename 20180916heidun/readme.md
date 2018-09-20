@@ -114,7 +114,7 @@ brute()
 
 # the user is admin
 
-和 bugku 平台某个题目原理相似，可以参考 [该题](https://findneo.github.io/180406BugkuWriteup/#welcome-to-bugkuctf) ，不赘述。
+和 bugku 平台某个题目原理相似，因此没有保留源码。可以参考 [该题](https://findneo.github.io/180406BugkuWriteup/#welcome-to-bugkuctf) ，不赘述。
 
 ```php
 /web/theuserisadmin/?file=class.php&user=php://input&pass=O:4:"Read":1:{s:4:"file";s:8:"f1a9.php";}
@@ -131,15 +131,11 @@ post:the user is admin
 ```python
 binwalk -e sgcc.png
 cat secret.txt | base64 -d | base64 -d > final.png
-//原本用notepad++解码base64，然后拷贝到winhex不成功。后来用这么一句话解决了，很舒服
-//Linux大法好 \o/
 ```
 
 ![1537070199581](images/1537070199581.png)
 
 # 注入日志分析
-
-**author: [Mads](https://madsome.one/) **  
 
 给了一个日志文件，`file data.log`得到是一个文本文件，直接打开，前几行是
 
@@ -180,9 +176,73 @@ id=2 AND UNICODE(SUBSTRING((SELECT ISNULL(CAST(LTRIM(STR(COUNT(DISTINCT(theflag)
 
 [列移位密码](https://ctf-wiki.github.io/ctf-wiki/crypto/classical/others/#_9) 
 
+```python
+snkeegt fhstetr Iedsabs tnaktrt otessha iiriwis tethees
+key： howarey
+Columnar Transposition Cipher
+```
+
+| h    | o    | w    | a    | r    | e    | y    |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| 3    | 4    | 6    | 1    | 5    | 2    | 7    |
+| I    | t    | i    | s    | o    | f    | t    |
+| e    | n    | i    | n    | t    | h    | e    |
+| d    | a    | r    | k    | e    | s    | t    |
+| s    | k    | i    | e    | s    | t    | h    |
+| a    | t    | w    | e    | s    | e    | e    |
+| b    | r    | i    | g    | h    | t    | e    |
+| s    | t    | s    | t    | a    | r    | s    |
+
+或者
+
+```python
+c='snkeegt fhstetr Iedsabs tnaktrt otessha iiriwis tethees'.split(' ')
+k='howarey'
+kk=sorted(k)
+print(''.join(c[kk.index(j)][i] for i in range(len(k)) for j in k))
+# Itisofteninthedarkestskiesthatweseebrighteststars
+```
+
+
+
 # 这是啥呀
 
 base32编码
+
+```shell
+echo MZWGCZ33MM4GENJVHBRDSNJUGAYTSOBVGZTDAYRQGIZTINLEMMZTSNJVHBRX2=== | base32 -d
+#flag{c8b558b954019856f0b02345dc39558c}
+```
+
+# Windows逆向
+
+```
+s='sKfxEeft}f{gyrYgthtyhifsjei53UUrrr_t2cdsef66246087138\0087138'
+flag=''
+idx=[1,4,14,10,5,36,23,42,13,19,28,13,27,39,48,41,42]
+for i in idx:
+     flag+=s[i]
+print(flag)
+# KEY{e2s6ry3r5s8f6
+```
+
+得到部分flag，加上1024}得到完整flag：KEY{e2s6ry3r5s8f61024}
+
+# reverseme
+
+```python
+python -c "open('file.png','wb').write(open('reverseme','rb').read()[::-1])"
+或
+<reverseme xxd -p -c1 | tac | xxd -p -r >file.png
+```
+
+![1537420090085](images/1537420090085.png)
+
+```shell
+convert -flop file.png mirror_file.png
+```
+
+![1537420103233](images/1537420103233.png)
 
 # 下午
 
@@ -190,4 +250,4 @@ base32编码
 
 底部有flag: `flag{0b58f603ff55c0c190502b44b4ffbf2c}`  
 
-此外一些没进一步利用上的信息和部分题目的附件放在[GiIthub](https://github.com/findneo/ctfgodown/blob/master/20180916heidun/) 上，有兴趣可移步查看。
+此外一些没进一步利用上的信息和部分题目的附件放在[GiIthub](https://github.com/findneo/ctfgodown/blob/master/20180916heidun/) ，有兴趣可移步查看。
